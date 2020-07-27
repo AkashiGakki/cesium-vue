@@ -1,5 +1,5 @@
 <template>
-  <div id="cesiumContainer"></div>
+  <div id="cesiumContainer" ref="viewer"></div>
 </template>
 
 <script>
@@ -9,9 +9,14 @@ import 'cesium/Widgets/widgets.css'
 export default {
     name: 'CesiumViewer',
     mounted () {
+        // 初始化
         this.init();
+
+        // 添加图层
+        this.addLayers();
     },
     methods: {
+        // 初始化
         init () {
             let viewerOption = {
                 geocoder: false,                // 地理位置搜索控件
@@ -30,12 +35,23 @@ export default {
             // your token
             Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MTFkZDY2NC00NjE4LTQyOTMtOTZhMS1lNzU4OWJhY2ZkNzgiLCJpZCI6MzE2NDQsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTU3NTkxODV9.pkaTjYrzbEswbhOy2X4KelZpDepVSgxN7f_GVYl6BiQ';
 
-            let viewer = new Cesium.Viewer('cesiumContainer', viewerOption);
-            console.log('viewer', viewer);
-            console.log('cesium', Cesium);
+            // let viewer = new Cesium.Viewer('cesiumContainer', viewerOption);
+            // console.log('viewer', viewer);
+            // console.log('cesium', Cesium);
+
+            this.$viewer = new Cesium.Viewer(this.$refs.viewer, viewerOption);
 
             // 隐藏Logo
-            viewer.cesiumWidget.creditContainer.style.display="none";
+            // viewer.cesiumWidget.creditContainer.style.display = "none";
+            this.$viewer.cesiumWidget.creditContainer.style.display = "none";
+        },
+        //
+        addLayers () {
+            // Remove default base layer
+            // this.$viewer.imageryLayers.remove(this.$viewer.imageryLayers.get(0));
+
+            // Add grid imagery
+            this.$viewer.imageryLayers.addImageryProvider(new Cesium.GridImageryProvider());
         }
     }
 }
