@@ -6,7 +6,7 @@ const debug = process.env.NODE_ENV !== 'production'
 let cesiumSource = './node_modules/cesium/Source'
 let cesiumWorkers = '../Build/Cesium/Workers'
 module.exports = {
-    publicPath: '',
+    // publicPath: './',
     devServer: {
         port: 9999
     },
