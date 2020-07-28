@@ -35,6 +35,10 @@ export default {
         selectionIndicator: false, // 实体对象选择框控件
         scene3DOnly: true, // 仅3D渲染，节省GPU内存
       };
+
+      console.log('this.$refs.viewer', this.$refs.viewer);
+      console.log('this.$viewer', this.$viewer);
+
       // your token
       Cesium.Ion.defaultAccessToken =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MTFkZDY2NC00NjE4LTQyOTMtOTZhMS1lNzU4OWJhY2ZkNzgiLCJpZCI6MzE2NDQsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTU3NTkxODV9.pkaTjYrzbEswbhOy2X4KelZpDepVSgxN7f_GVYl6BiQ";
