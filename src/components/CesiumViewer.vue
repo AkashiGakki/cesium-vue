@@ -13,7 +13,7 @@ export default {
     this.init();
 
     // 添加图层
-    // this.addLayers();
+    this.addLayers();
 
     // 添加地形
     // this.addTerrain();
@@ -23,7 +23,7 @@ export default {
 
     // 加载实体
     // this.loadEntities();
-    this.addEntities();
+    // this.addEntities();
   },
   methods: {
     // 初始化
@@ -66,8 +66,15 @@ export default {
       // this.$viewer.imageryLayers.remove(this.$viewer.imageryLayers.get(0));
 
       // Add grid imagery
+      // this.$viewer.imageryLayers.addImageryProvider(
+      //   new Cesium.GridImageryProvider()
+      // );
+
       this.$viewer.imageryLayers.addImageryProvider(
-        new Cesium.GridImageryProvider()
+        new Cesium.SingleTileImageryProvider({
+          url: "~@/assets/static/bang.png",
+          rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
+        })
       );
     },
     // 添加地形
@@ -135,11 +142,11 @@ export default {
       );
 
       let entity = this.$viewer.entities.add({
-        name: 'J15',
+        name: "J15",
         position: position,
         orientation: orientation,
         model: {
-          uri: 'static/J15.glb',
+          uri: "static/J15.glb",
           minimumPixelSize: 128,
           maximumScale: 20000,
         },
@@ -148,17 +155,17 @@ export default {
     },
     addEntities() {
       let fighter = this.$viewer.entities.add({
-        name: 'fighter',
-        id: 'J15',
+        name: "fighter",
+        id: "J15",
         model: {
-          uri: "../../static/J15.glb",
+          uri: "static/J15.glb",
           minimumPixelSize: 100,
           maximumScale: 1000,
         },
-        position: Cesium.Cartesian3.fromDegrees(-110.345, 30, 60000)
-      })
+        position: Cesium.Cartesian3.fromDegrees(-110.345, 30, 60000),
+      });
       this.$viewer.trackedEntity = fighter;
-    }
+    },
   },
 };
 </script>
