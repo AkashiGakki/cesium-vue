@@ -13,7 +13,7 @@ export default {
     this.init();
 
     // 添加图层
-    this.addLayers();
+    // this.addLayers();
 
     // 添加地形
     // this.addTerrain();
@@ -22,7 +22,9 @@ export default {
     // this.configScene();
 
     // 加载实体
-    // this.loadEntities();
+    this.loadEntities();
+
+    // 添加模型
     // this.addEntities();
   },
   methods: {
@@ -66,16 +68,24 @@ export default {
       // this.$viewer.imageryLayers.remove(this.$viewer.imageryLayers.get(0));
 
       // Add grid imagery
+      this.$viewer.imageryLayers.addImageryProvider(
+        new Cesium.GridImageryProvider()
+      );
+
       // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.GridImageryProvider()
+      //   new Cesium.SingleTileImageryProvider({
+      //     url: "images/bang.png",
+      //     rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
+      //   })
       // );
 
-      this.$viewer.imageryLayers.addImageryProvider(
-        new Cesium.SingleTileImageryProvider({
-          url: "~@/assets/static/bang.png",
-          rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
-        })
-      );
+      // this.$viewer.imageryLayers.addImageryProvider(
+      //   new Cesium.ArcGisMapServerImageryProvider({
+      //     url:
+      //       "//services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+      //     baseLayerPicker: false
+      //   }),
+      // );
     },
     // 添加地形
     addTerrain() {
@@ -146,25 +156,152 @@ export default {
         position: position,
         orientation: orientation,
         model: {
-          uri: "static/J15.glb",
+          uri: "model3D/J15.glb",
           minimumPixelSize: 128,
           maximumScale: 20000,
         },
       });
-      this.$viewer.trackedEntity = entity;
+
+      // this.$viewer.trackedEntity = entity;
+      entity.show = false;
+
+      // 多边形
+      let polygon = this.$viewer.entities.add({
+        name: "正方形",
+        id: "square",
+        polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([
+            -109.080842,
+            45.002073,
+            -105.91517,
+            45.002073,
+            -104.058488,
+            44.996596,
+            -104.053011,
+            43.002989,
+            -104.053011,
+            41.003906,
+            -105.728954,
+            40.998429,
+            -107.919731,
+            41.003906,
+            -109.04798,
+            40.998429,
+            -111.047063,
+            40.998429,
+            -111.047063,
+            42.000709,
+            -111.047063,
+            44.476286,
+            -111.05254,
+            45.002073,
+          ]),
+          height: 0,
+          material: Cesium.Color.RED.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+
+      // this.$viewer.zoomTo(polygon);
+      polygon.show = false;
+
+      // 三角形
+      let triangle = this.$viewer.entities.add({
+        name: "三角形",
+        polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([
+            140.0,
+            40.0,
+            140.0,
+            35.0,
+            135.0,
+            35.0,
+          ]),
+          perPositionHeight: true,
+          material: Cesium.Color.PURPLE.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.PURPLE,
+        },
+      });
+
+      // this.$viewer.zoomTo(triangle);
+      triangle.show = false;
+
+      let text = this.$viewer.entities.add({
+        name: "46",
+        position: Cesium.Cartesian3.fromDegrees(138.6, 36),
+        label: {
+          text: "46",
+          font: "20px Consolas",
+          verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        },
+      });
+
+      text.show = false;
+
+      let nogizaka = this.$viewer.entities.add({
+        name: "nogizaka",
+        position: Cesium.Cartesian3.fromDegrees(136, 34),
+        label: {
+          text: "乃木坂",
+          font: "14px Consolas",
+          fillColor: Cesium.Color.PURPLE.withAlpha(0.7),
+          horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+          eyeOffset: Cesium.Cartesian3(21.0, 0.0, 0.0),
+        },
+      });
+
+      nogizaka.show = false;
+
+      // 椭圆
+      let ellipse = this.$viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(-103.0, 40.0),
+        ellipse: {
+          semiMinorAxis: 250000.0,
+          semiMajorAxis: 400000.0,
+          material: Cesium.Color.BLUE.withAlpha(0.5),
+        },
+      });
+      // 棋盘材质
+      // ellipse.ellipse.material = new Cesium.CheckerboardMaterialProperty({
+      //   evenColor: Cesium.Color.WHITE,
+      //   oddColor: Cesium.Color.BLACK,
+      //   repeat: new Cesium.Cartesian2(4, 4),
+      // });
+
+      // 条纹材质
+      // ellipse.ellipse.material = new Cesium.StripeMaterialProperty({
+      //   evenColor: Cesium.Color.WHITE,
+      //   oddColor: Cesium.Color.BLACK,
+      //   repeat: 32,
+      // });
+
+      // 网格材质
+      ellipse.ellipse.material = new Cesium.GridMaterialProperty({
+        color: Cesium.Color.YELLOW,
+        cellAlpha: 0.2,
+        lineCount: new Cesium.Cartesian2(8, 8),
+        lineThickness: new Cesium.Cartesian2(2.0, 2.0),
+      });
+
+      // this.$viewer.zoomTo(ellipse);
+      ellipse.show = false;
     },
+    // 添加模型
     addEntities() {
       let fighter = this.$viewer.entities.add({
         name: "fighter",
         id: "J15",
         model: {
-          uri: "static/J15.glb",
+          uri: "model3D/J15.glb",
           minimumPixelSize: 100,
           maximumScale: 1000,
         },
-        position: Cesium.Cartesian3.fromDegrees(-110.345, 30, 60000),
+        position: Cesium.Cartesian3.fromDegrees(-110.345, 30, 70000),
       });
-      this.$viewer.trackedEntity = fighter;
+      // this.$viewer.trackedEntity = fighter;
+      this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 35));
     },
   },
 };
