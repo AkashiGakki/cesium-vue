@@ -165,6 +165,21 @@ export default {
       // this.$viewer.trackedEntity = entity;
       entity.show = false;
 
+      let box = this.$viewer.entities.add({
+        name: 'box',
+        id: 'box',
+        position: Cesium.Cartesian3.fromDegrees(-90.0, 40.0, 300000.0),
+        box: {
+          dimensions: new Cesium.Cartesian3(40000.0, 30000.0, 50000.0),
+          material: Cesium.Color.YELLOW.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.BLACK
+        }
+      });
+
+      // this.$viewer.zoomTo(box);
+      box.show = false;
+
       // 多边形
       let polygon = this.$viewer.entities.add({
         name: "正方形",
