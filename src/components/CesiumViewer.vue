@@ -27,8 +27,11 @@ export default {
     // 添加模型
     this.addEntities();
 
-    //
+    // 移动模型
     this.moveEneity();
+
+    // 调整实体位置
+    // this.adjustPosition();
   },
   methods: {
     // 初始化
@@ -357,6 +360,24 @@ export default {
           }
         });
       }, 3000);
+    },
+    useGeometry() {
+
+    },
+    usePrimitive() {
+
+    },
+    adjustPosition() {
+      let box = this.$viewer.entities.getById("box");
+      let surface = Cesium.Cartesian3.fromRadians(-90.0, 40.0, 300000.0);
+      let offset = Cesium.Cartesian3.fromRadians(-90.0, 40.0, 0.0);
+      let translation = Cesium.Cartesian3.subtract(
+        offset,
+        surface,
+        new Cesium.Cartesian3()
+      );
+      let modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+      box.computeModelMatrix(Cesium.JulianDate.now(), modelMatrix)
     },
   },
 };
