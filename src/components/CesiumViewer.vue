@@ -22,10 +22,13 @@ export default {
     // this.configScene();
 
     // 加载实体
-    this.loadEntities();
+    // this.loadEntities();
 
     // 添加模型
-    // this.addEntities();
+    this.addEntities();
+
+    //
+    this.moveEneity();
   },
   methods: {
     // 初始化
@@ -166,15 +169,15 @@ export default {
       entity.show = false;
 
       let box = this.$viewer.entities.add({
-        name: 'box',
-        id: 'box',
+        name: "box",
+        id: "box",
         position: Cesium.Cartesian3.fromDegrees(-90.0, 40.0, 300000.0),
         box: {
           dimensions: new Cesium.Cartesian3(40000.0, 30000.0, 50000.0),
           material: Cesium.Color.YELLOW.withAlpha(0.5),
           outline: true,
-          outlineColor: Cesium.Color.BLACK
-        }
+          outlineColor: Cesium.Color.BLACK,
+        },
       });
 
       // this.$viewer.zoomTo(box);
@@ -317,6 +320,43 @@ export default {
       });
       // this.$viewer.trackedEntity = fighter;
       this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 35));
+    },
+    moveEneity() {
+      let fighter = this.$viewer.entities.getById("J15");
+
+      let longitude = -110.345;
+      let latitude = 30.0;
+      let height = 70000;
+
+      this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 350));
+
+      let interval = setInterval(() => {
+        latitude += 0.000001;
+
+        fighter.position = new Cesium.Cartesian3.fromDegrees(
+          longitude,
+          latitude,
+          height
+        );
+        if (latitude >= 30.0003) {
+          clearInterval(interval);
+        }
+      }, 1000 / 60);
+
+      setTimeout(() => {
+        let interval2 = setInterval(() => {
+          latitude += 0.000004;
+
+          fighter.position = new Cesium.Cartesian3.fromDegrees(
+            longitude,
+            latitude,
+            height
+          );
+          if (latitude >= 30.0005) {
+            clearInterval(interval2);
+          }
+        });
+      }, 3000);
     },
   },
 };
