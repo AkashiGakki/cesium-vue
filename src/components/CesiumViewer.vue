@@ -25,13 +25,16 @@ export default {
     // this.loadEntities();
 
     // 添加模型
-    this.addEntities();
+    // this.addEntities();
 
     // 移动模型
-    this.moveEneity();
+    // this.moveEneity();
 
     // 调整实体位置
     // this.adjustPosition();
+
+    // 设置场景
+    this.setScene();
   },
   methods: {
     // 初始化
@@ -324,6 +327,7 @@ export default {
       // this.$viewer.trackedEntity = fighter;
       this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 35));
     },
+    // 移动模型
     moveEneity() {
       let fighter = this.$viewer.entities.getById("J15");
 
@@ -361,12 +365,11 @@ export default {
         });
       }, 3000);
     },
-    useGeometry() {
 
-    },
-    usePrimitive() {
+    useGeometry() {},
 
-    },
+    usePrimitive() {},
+
     adjustPosition() {
       let box = this.$viewer.entities.getById("box");
       let surface = Cesium.Cartesian3.fromRadians(-90.0, 40.0, 300000.0);
@@ -377,7 +380,212 @@ export default {
         new Cesium.Cartesian3()
       );
       let modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-      box.computeModelMatrix(Cesium.JulianDate.now(), modelMatrix)
+      box.computeModelMatrix(Cesium.JulianDate.now(), modelMatrix);
+    },
+    // 创建实体
+    createEntity(entity) {
+      // return new Promise(() => {
+      //   this.$viewer.entities.add({
+      //     name: entity.name,
+      //     id: entity.id,
+      //     show: true,
+      //     position: entity.position,
+      //     orientation: entity.orientation,
+      //     model: entity.model,
+      //     path: entity.path,
+      //   });
+      // })
+      let entities = this.$viewer.entities.add({
+        name: entity.name,
+        id: entity.id,
+        // availability: entity.availability,
+        // show: entity.hasOwnProperty(entity.show) ? entity.show : true,
+        show: true,
+        position: entity.position,
+        orientation: entity.orientation,
+        model: entity.model,
+        path: entity.path,
+      });
+      return entities;
+    },
+    // 创建粒子效果
+    createParticleSystems(options, bindId) {
+      let entity = this.$viewer.entities.getById(bindId);
+      let particleSystem = this.$viewer.scene.primitives.add(
+        new Cesium.ParticleSystem({
+          // show: options.hasOwnProperty(options.show) ? options.show : true,
+          show: true,
+          image: options.image,
+          imageSize: new Cesium.Cartesian2(30.0, 30.0),
+          color: options.color,
+          emissionRate: options.emissionRate,
+          emitter: options.emitter,
+          modelMatrix: entity.computeModelMatrix(
+            Cesium.JulianDate.now(),
+            new Cesium.Matrix4()
+          ),
+          emitterModelMatrix: options.emitterModelMatrix,
+          lifetime: options.lifetime,
+          speed: options.speed,
+        })
+      );
+
+      let index = this.$viewer.scene.primitives._primitives.indexOf(
+        particleSystem
+      );
+
+      // 绑定多个粒子效果
+      entity.particles = [index];
+
+      return particleSystem;
+    },
+    // 更新实体控制
+    controlEntity(start, stop, speed = 1) {
+      // let vm = this;
+      let longitude = start.longitude;
+      let latitude = start.latitude;
+      let height = start.height;
+
+      // let position = new Cesium.Cartesian3.fromDegrees(
+      //   longitude,
+      //   latitude,
+      //   height
+      // );
+
+      let interval = setInterval(() => {
+        // 前进方向
+        latitude += 0.000001 * speed;
+
+        // 获取实体实例
+        let fighter = this.$viewer.entities.getById("fighter");
+
+        fighter.position = new Cesium.Cartesian3.fromDegrees(
+          longitude,
+          latitude,
+          height
+        );
+
+        // 获取粒子效果实例
+        let particles = [this.$viewer.scene.primitives.get(fighter.particles)];
+
+        for (const particle of particles) {
+          particle.modelMatrix = fighter.computeModelMatrix(
+            Cesium.JulianDate.now(),
+            new Cesium.Matrix4()
+          );
+        }
+
+        if (latitude >= stop.latitude) {
+          clearInterval(interval);
+        }
+      }, 1000 / 60);
+    },
+    // 更新粒子控制
+    controlParticle() {},
+    // 设置场景
+    setScene() {
+      let _this = this;
+      let fighterOptions = {
+        name: "fighter",
+        id: "fighter",
+        position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883, 8000.0),
+        model: {
+          uri: "model3D/J15.glb",
+          minimumPixelSize: 70,
+          maximumScale: 1000.0,
+        },
+      };
+
+      // let fighter = this.createEntity(fighterOptions);
+
+      // this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 35));
+
+      let particleOptions = {
+        show: true,
+        image: "images/fire.png",
+        imageSize: new Cesium.Cartesian2(30.0, 30.0),
+        color: Cesium.Color.YELLOW.withAlpha(0.4),
+        emissionRate: 15.0,
+        emitter: new Cesium.ConeEmitter(Cesium.Math.toRadians(30.0)),
+        lifetime: 16.0,
+        emitterModelMatrix: new Cesium.Matrix4.fromTranslationQuaternionRotationScale(
+          new Cesium.Cartesian3(0.0, -11.0, 1.0),
+          new Cesium.Quaternion(1, 0, 0, 1),
+          new Cesium.Cartesian3(7.0, 6.0, 5.0),
+          new Cesium.Matrix4()
+        ),
+      };
+
+      // let fighterParticle = this.createParticleSystems(
+      //   particleOptions,
+      //   "fighter"
+      // );
+
+      const promise = new Promise((resolve, rejcet) => {
+        let fighter = this.createEntity(fighterOptions);
+        resolve(fighter);
+        rejcet();
+      });
+
+      promise.then((fighter) => {
+        this.$viewer.zoomTo(
+          fighter,
+          new Cesium.HeadingPitchRange(-1, -0.3, 35)
+        );
+        setTimeout(() => {
+          const promise2 = new Promise((resolve, rejcet) => {
+            let fighterParticle = this.createParticleSystems(
+              particleOptions,
+              "fighter"
+            );
+            resolve(fighterParticle);
+            rejcet();
+          });
+
+          promise2.then(() => {
+            let start = {
+              longitude: -75.59777,
+              latitude: 40.03883,
+              height: 8000,
+            };
+            let stop = {
+              longitude: -75.59777,
+              latitude: 40.0403,
+              height: 8000,
+            };
+
+            _this.controlEntity(start, stop, 2);
+          });
+
+          setTimeout(() => {
+            _this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 150));
+            // _this.$viewer.scene.camera.flyTo({
+            //   destination: fighter.position._value,
+            //   orientation: {
+            //     heading: Cesium.Math.toRadians(0.0),
+            //     pitch: Cesium.Math.toRadians(15.0),
+            //     roll: 0.0,
+            //   },
+            // });
+            // console.log("fighter", fighter);
+          }, 5000);
+        }, 3000);
+      });
+
+      // promise2.then(() => {
+      //   let start = {
+      //     longitude: -75.59777,
+      //     latitude: 40.03883,
+      //     height: 8000,
+      //   };
+      //   let stop = {
+      //     longitude: -75.59777,
+      //     latitude: 40.041,
+      //     height: 8000,
+      //   };
+
+      //   _this.controlEntity(start, stop, 2);
+      // });
     },
   },
 };
