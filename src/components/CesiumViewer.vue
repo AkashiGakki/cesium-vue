@@ -39,6 +39,16 @@ export default {
   methods: {
     // 初始化
     init() {
+      // let clock = new Cesium.Clock({
+      //   startTime: Cesium.JulianDate.now(),
+      //   currentTime: Cesium.JulianDate.now(),
+      //   stopTime: Cesium.JulianDate.addDays(Cesium.JulianDate.now(), 1, new Cesium.JulianDate()),
+      //   clockRange: Cesium.ClockRange.LOOP_STOP,
+      //   clockStep: Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
+      //   multiplier: 9000,
+      //   shouldAnimate: true
+      // });
+
       let viewerOption = {
         geocoder: false, // 地理位置搜索控件
         homeButton: false, // 首页跳转控件
@@ -54,6 +64,7 @@ export default {
         scene3DOnly: true, // 仅3D渲染，节省GPU内存
         shadows: true,
         shouldAnimate: true,
+        // clockViewModel: new Cesium.ClockViewModel(clock)
       };
 
       //   console.log('this.$refs.viewer', this.$refs.viewer);
@@ -70,6 +81,8 @@ export default {
 
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
+
+      // this.$viewer.scene.globe.enableLighting = true;
     },
     // 添加图层
     addLayers() {
