@@ -34,7 +34,10 @@ export default {
     // this.adjustPosition();
 
     // 设置场景
-    this.setScene();
+    // this.setScene();
+
+    //
+    this.sceneReproduce();
   },
   methods: {
     // 初始化
@@ -600,6 +603,93 @@ export default {
       //   _this.controlEntity(start, stop, 2);
       // });
     },
+    // 
+    controlModel(start, stop, duration) {
+      let vm = this;
+
+      let longitude = start.longitude;
+      let latitude = start.latitude;
+      let height = start.height;
+
+      let velocity =
+        Math.abs(Math.abs(stop.latitude) - Math.abs(start.latitude)) /
+        (duration * 1000);
+
+      let interval = setInterval(() => {
+        // 前进方向
+        latitude += velocity * (1000 / 60);
+
+        // 获取实体实例
+        let fighter = vm.$viewer.entities.getById("fighter");
+
+        fighter.position = new Cesium.Cartesian3.fromDegrees(
+          longitude,
+          latitude,
+          height
+        );
+
+        // 获取粒子效果实例
+        // let particles = [vm.$viewer.scene.primitives.get(fighter.particles)];
+
+        // for (const particle of particles) {
+        //   particle.modelMatrix = fighter.computeModelMatrix(
+        //     Cesium.JulianDate.now(),
+        //     new Cesium.Matrix4()
+        //   );
+        // }
+
+        if (latitude >= stop.latitude) {
+          clearInterval(interval);
+        }
+      }, 1000 / 60);
+    },
+    // 
+    sceneReproduce() {
+      let vm = this;
+      let fighterOptions = {
+        name: "fighter",
+        id: "fighter",
+        position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883, 8000.0),
+        model: {
+          uri: "model3D/J15.glb",
+          minimumPixelSize: 70,
+          maximumScale: 1000.0
+        }
+      };
+
+      let fighter = this.createEntity(fighterOptions);
+
+      vm.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 150));
+
+      let start = {
+        longitude: -75.59777,
+        latitude: 40.03883,
+        height: 8000
+      };
+      let stop = {
+        longitude: -75.59777,
+        latitude: 40.04,
+        height: 8000
+      };
+      let duration = 3;
+
+      this.controlModel(start, stop, duration);
+
+      setTimeout(() => {
+        let new_start = {
+          longitude: -75.59777,
+          latitude: 40.04,
+          height: 8000
+        };
+        let new_stop = {
+          longitude: -75.59777,
+          latitude: 40.0403,
+          height: 8000
+        };
+        this.controlModel(new_start, new_stop, 4);
+      }, 9000);
+
+    }
   },
 };
 </script>
