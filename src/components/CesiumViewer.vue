@@ -30,14 +30,17 @@ export default {
     // 移动模型
     // this.moveEneity();
 
-    // 调整实体位置
-    // this.adjustPosition();
-
     // 设置场景
     // this.setScene();
 
-    //
-    this.sceneReproduce();
+    // 绘制实体
+    // this.useEntity();
+
+    // 雪景
+    // this.snow();
+
+    // 雨景
+    this.rain();
   },
   methods: {
     // 初始化
@@ -328,6 +331,411 @@ export default {
       // this.$viewer.zoomTo(ellipse);
       ellipse.show = false;
     },
+    // 绘制实体
+    useEntity() {
+      // Box
+      let blueBox = this.$viewer.entities.add({
+        name: "Blue box",
+        //中心的位置
+        position: Cesium.Cartesian3.fromDegrees(-114.0, 40.0, 300000.0),
+        box: {
+          //长宽高
+          dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
+          material: Cesium.Color.BLUE,
+        },
+      });
+      blueBox.show = false;
+
+      let redBox = this.$viewer.entities.add({
+        name: "Red box with black outline",
+        position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 300000.0),
+        box: {
+          dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
+          material: Cesium.Color.RED,
+          outline: true, //显示轮廓
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      redBox.show = false;
+
+      let outlineOnly = this.$viewer.entities.add({
+        name: "Yellow box outline",
+        position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 300000.0),
+        box: {
+          dimensions: new Cesium.Cartesian3(400000.0, 300000.0, 500000.0),
+          fill: false, //不显示填充
+          outline: true,
+          outlineColor: Cesium.Color.YELLOW,
+        },
+      });
+      outlineOnly.show = false;
+
+      //Circles Ellipses
+      //浮空的绿色圆形
+      let greenCircle = this.$viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(-111.0, 40.0, 150000.0),
+        name: "Green circle at height",
+        ellipse: {
+          semiMinorAxis: 300000.0,
+          semiMajorAxis: 300000.0,
+          height: 200000.0, //浮空
+          material: Cesium.Color.GREEN,
+        },
+      });
+      greenCircle.show = false;
+
+      //红色椭圆形，位于地表，带轮廓
+      let redEllipse = this.$viewer.entities.add({
+        //不带高度
+        position: Cesium.Cartesian3.fromDegrees(-103.0, 40.0),
+        name: "Red ellipse on surface with outline",
+        ellipse: {
+          semiMinorAxis: 250000.0,
+          semiMajorAxis: 400000.0,
+          material: Cesium.Color.RED.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.RED,
+        },
+      });
+      redEllipse.show = false;
+
+      //蓝色椭圆柱，旋转了角度
+      let blueEllipse = this.$viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(-95.0, 40.0, 100000.0),
+        name: "Blue translucent, rotated, and extruded ellipse",
+        ellipse: {
+          semiMinorAxis: 150000.0,
+          semiMajorAxis: 300000.0,
+          extrudedHeight: 200000.0, //拉伸
+          rotation: Cesium.Math.toRadians(45), //旋转
+          material: Cesium.Color.BLUE.withAlpha(0.7),
+          outline: true,
+        },
+      });
+      blueEllipse.show = false;
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // Corridor
+      let redCorridor = this.$viewer.entities.add({
+        name: "Red corridor on surface with rounded corners and outline",
+        corridor: {
+          positions: Cesium.Cartesian3.fromDegreesArray([
+            -100.0,
+            40.0,
+            -105.0,
+            40.0,
+            -105.0,
+            35.0,
+          ]),
+          width: 200000.0,
+          material: Cesium.Color.RED.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.RED,
+        },
+      });
+      redCorridor.show = false;
+
+      let greenCorridor = this.$viewer.entities.add({
+        name: "Green corridor at height with mitered corners",
+        corridor: {
+          positions: Cesium.Cartesian3.fromDegreesArray([
+            -90.0,
+            40.0,
+            -95.0,
+            40.0,
+            -95.0,
+            35.0,
+          ]),
+          height: 100000.0,
+          width: 200000.0,
+          cornerType: Cesium.CornerType.MITERED,
+          material: Cesium.Color.GREEN,
+        },
+      });
+      greenCorridor.show = false;
+
+      let blueCorridor = this.$viewer.entities.add({
+        name: "Blue extruded corridor with beveled corners and outline",
+        corridor: {
+          positions: Cesium.Cartesian3.fromDegreesArray([
+            -80.0,
+            40.0,
+            -85.0,
+            40.0,
+            -85.0,
+            35.0,
+          ]),
+          height: 200000.0,
+          extrudedHeight: 100000.0,
+          width: 200000.0,
+          cornerType: Cesium.CornerType.BEVELED,
+          material: Cesium.Color.BLUE.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.BLUE,
+        },
+      });
+      blueCorridor.show = false;
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      //圆柱和圆锥 Cylinder Cones
+      let greenCylinder = this.$viewer.entities.add({
+        name: "Green cylinder with black outline",
+        position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 200000.0),
+        cylinder: {
+          //圆柱
+          length: 400000.0,
+          topRadius: 200000.0,
+          bottomRadius: 200000.0,
+          material: Cesium.Color.GREEN,
+          outline: true,
+          outlineColor: Cesium.Color.DARK_GREEN,
+        },
+      });
+      greenCylinder.show = false;
+
+      let redCone = this.$viewer.entities.add({
+        name: "Red cone",
+        position: Cesium.Cartesian3.fromDegrees(-105.0, 40.0, 200000.0),
+        cylinder: {
+          //圆锥
+          length: 400000.0,
+          topRadius: 0.0,
+          bottomRadius: 200000.0,
+          material: Cesium.Color.RED,
+        },
+      });
+      redCone.show = false;
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // 多边形 Polygon
+      let redPolygon = this.$viewer.entities.add({
+        name: "贴着地表的多边形",
+        polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([
+            -115.0,
+            37.0,
+            -115.0,
+            32.0,
+            -107.0,
+            33.0,
+            -102.0,
+            31.0,
+            -102.0,
+            35.0,
+          ]),
+          material: Cesium.Color.RED,
+        },
+      });
+      redPolygon.show = false;
+
+      let greenPolygon = this.$viewer.entities.add({
+        name: "绿色拉伸多边形",
+        polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArray([
+            -108.0,
+            42.0,
+            -100.0,
+            42.0,
+            -104.0,
+            40.0,
+          ]),
+          extrudedHeight: 500000.0,
+          material: Cesium.Color.GREEN,
+        },
+      });
+      greenPolygon.show = false;
+
+      let orangePolygon = this.$viewer.entities.add({
+        name: "每个顶点具有不同拉伸高度的橘色多边形",
+        polygon: {
+          hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -108.0,
+            25.0,
+            100000,
+            -100.0,
+            25.0,
+            100000,
+            -100.0,
+            30.0,
+            100000,
+            -108.0,
+            30.0,
+            300000,
+          ]),
+          extrudedHeight: 0,
+          perPositionHeight: true,
+          material: Cesium.Color.ORANGE,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      orangePolygon.show = false;
+
+      let bluePolygon = this.$viewer.entities.add({
+        name: "具有挖空效果的蓝色多边形",
+        polygon: {
+          hierarchy: {
+            positions: Cesium.Cartesian3.fromDegreesArray([
+              -99.0,
+              30.0,
+              -85.0,
+              30.0,
+              -85.0,
+              40.0,
+              -99.0,
+              40.0,
+            ]),
+            holes: [
+              {
+                positions: Cesium.Cartesian3.fromDegreesArray([
+                  -97.0,
+                  31.0,
+                  -97.0,
+                  39.0,
+                  -87.0,
+                  39.0,
+                  -87.0,
+                  31.0,
+                ]),
+                holes: [
+                  {
+                    positions: Cesium.Cartesian3.fromDegreesArray([
+                      -95.0,
+                      33.0,
+                      -89.0,
+                      33.0,
+                      -89.0,
+                      37.0,
+                      -95.0,
+                      37.0,
+                    ]),
+                    holes: [
+                      {
+                        positions: Cesium.Cartesian3.fromDegreesArray([
+                          -93.0,
+                          34.0,
+                          -91.0,
+                          34.0,
+                          -91.0,
+                          36.0,
+                          -93.0,
+                          36.0,
+                        ]),
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          material: Cesium.Color.BLUE,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      bluePolygon.show = false;
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // Polylines
+      let redLine = this.$viewer.entities.add({
+        name: "Red line on terrain",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArray([-75, 35, -125, 35]),
+          width: 5,
+          material: Cesium.Color.RED,
+          clampToGround: true,
+        },
+      });
+      redLine.show = false;
+
+      let greenRhumbLine = this.$viewer.entities.add({
+        name: "Green rhumb line",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArray([-75, 35, -125, 35]),
+          width: 5,
+          arcType: Cesium.ArcType.RHUMB,
+          material: Cesium.Color.GREEN,
+        },
+      });
+      greenRhumbLine.show = false;
+
+      let glowingLine = this.$viewer.entities.add({
+        name: "Glowing blue line on the surface",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArray([-75, 37, -125, 37]),
+          width: 10,
+          material: new Cesium.PolylineGlowMaterialProperty({
+            glowPower: 0.2,
+            taperPower: 0.5,
+            color: Cesium.Color.CORNFLOWERBLUE,
+          }),
+        },
+      });
+      glowingLine.show = false;
+
+      let orangeOutlined = this.$viewer.entities.add({
+        name:
+          "Orange line with black outline at height and following the surface",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -75,
+            39,
+            250000,
+            -125,
+            39,
+            250000,
+          ]),
+          width: 5,
+          material: new Cesium.PolylineOutlineMaterialProperty({
+            color: Cesium.Color.ORANGE,
+            outlineWidth: 2,
+            outlineColor: Cesium.Color.BLACK,
+          }),
+        },
+      });
+      orangeOutlined.show = false;
+
+      let purpleArrow = this.$viewer.entities.add({
+        name: "Purple straight arrow at height",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -75,
+            43,
+            500000,
+            -125,
+            43,
+            500000,
+          ]),
+          width: 10,
+          arcType: Cesium.ArcType.NONE,
+          material: new Cesium.PolylineArrowMaterialProperty(
+            Cesium.Color.PURPLE
+          ),
+        },
+      });
+      purpleArrow.show = false;
+
+      let dashedLine = this.$viewer.entities.add({
+        name: "Blue dashed line",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -75,
+            45,
+            500000,
+            -125,
+            45,
+            500000,
+          ]),
+          width: 4,
+          material: new Cesium.PolylineDashMaterialProperty({
+            color: Cesium.Color.CYAN,
+          }),
+        },
+      });
+      dashedLine.show = false;
+
+      // this.$viewer.zoomTo(this.$viewer.entities);
+    },
     // 添加模型
     addEntities() {
       let fighter = this.$viewer.entities.add({
@@ -381,23 +789,8 @@ export default {
         });
       }, 3000);
     },
-
-    useGeometry() {},
-
+    // 绘制立体图形
     usePrimitive() {},
-
-    adjustPosition() {
-      let box = this.$viewer.entities.getById("box");
-      let surface = Cesium.Cartesian3.fromRadians(-90.0, 40.0, 300000.0);
-      let offset = Cesium.Cartesian3.fromRadians(-90.0, 40.0, 0.0);
-      let translation = Cesium.Cartesian3.subtract(
-        offset,
-        surface,
-        new Cesium.Cartesian3()
-      );
-      let modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-      box.computeModelMatrix(Cesium.JulianDate.now(), modelMatrix);
-    },
     // 创建实体
     createEntity(entity) {
       // return new Promise(() => {
@@ -574,7 +967,10 @@ export default {
           });
 
           setTimeout(() => {
-            _this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 150));
+            _this.$viewer.zoomTo(
+              fighter,
+              new Cesium.HeadingPitchRange(-1, -0.3, 150)
+            );
             // _this.$viewer.scene.camera.flyTo({
             //   destination: fighter.position._value,
             //   orientation: {
@@ -603,93 +999,215 @@ export default {
       //   _this.controlEntity(start, stop, 2);
       // });
     },
-    // 
-    controlModel(start, stop, duration) {
+    // 控制模型飞行
+    controlModel(id, start, stop, duration) {
       let vm = this;
-
       let longitude = start.longitude;
       let latitude = start.latitude;
       let height = start.height;
 
-      let velocity =
+      // 方向判断
+      let coord = {};
+      if (stop.longitude > start.longitude) {
+        coord.right = true;
+        coord.left = false;
+      } else if (stop.longitude < start.longitude) {
+        coord.right = false;
+        coord.left = true;
+      }
+      if (stop.latitude > start.latitude) {
+        coord.up = true;
+        coord.down = false;
+      } else if (stop.latitude < start.latitude) {
+        coord.up = false;
+        coord.down = true;
+      }
+      // console.log("coord", coord);
+
+      let velocity_long =
+        Math.abs(Math.abs(stop.longitude) - Math.abs(start.longitude)) /
+        (duration * 1000);
+      let velocity_lat =
         Math.abs(Math.abs(stop.latitude) - Math.abs(start.latitude)) /
         (duration * 1000);
 
       let interval = setInterval(() => {
-        // 前进方向
-        latitude += velocity * (1000 / 60);
+        if (coord.right) {
+          longitude += velocity_long * (1000 / 60);
+        } else {
+          longitude -= velocity_long * (1000 / 60);
+        }
+        if (coord.up) {
+          latitude += velocity_lat * (1000 / 60);
+        } else {
+          latitude -= velocity_lat * (1000 / 60);
+        }
 
         // 获取实体实例
-        let fighter = vm.$viewer.entities.getById("fighter");
+        let entity = vm.$viewer.entities.getById(id);
 
-        fighter.position = new Cesium.Cartesian3.fromDegrees(
+        entity.position = new Cesium.Cartesian3.fromDegrees(
           longitude,
           latitude,
           height
         );
 
         // 获取粒子效果实例
-        // let particles = [vm.$viewer.scene.primitives.get(fighter.particles)];
+        if (entity.particles) {
+          let particles = [vm.$viewer.scene.primitives.get(entity.particles)];
 
-        // for (const particle of particles) {
-        //   particle.modelMatrix = fighter.computeModelMatrix(
-        //     Cesium.JulianDate.now(),
-        //     new Cesium.Matrix4()
-        //   );
-        // }
+          for (const particle of particles) {
+            particle.modelMatrix = entity.computeModelMatrix(
+              Cesium.JulianDate.now(),
+              new Cesium.Matrix4()
+            );
+          }
+        }
 
-        if (latitude >= stop.latitude) {
+        if (coord.right && longitude >= stop.longitude) {
+          clearInterval(interval);
+        } else if (coord.left && longitude <= stop.longitude) {
+          clearInterval(interval);
+        }
+        if (coord.up && latitude >= stop.latitude) {
+          clearInterval(interval);
+        } else if (coord.down && latitude <= stop.latitude) {
           clearInterval(interval);
         }
       }, 1000 / 60);
     },
-    // 
-    sceneReproduce() {
+    // 雪景
+    snow() {
       let vm = this;
-      let fighterOptions = {
-        name: "fighter",
-        id: "fighter",
-        position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883, 8000.0),
-        model: {
-          uri: "model3D/J15.glb",
-          minimumPixelSize: 70,
-          maximumScale: 1000.0
+      this.$viewer.terrainProvider = Cesium.createWorldTerrain();
+      this.$viewer.scene.globe.depthTestAgainstTerrain = true;
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3(
+          277096.634865404,
+          5647834.481964232,
+          2985563.7039122293
+        ),
+        orientation: {
+          heading: 4.731089976107251,
+          pitch: -0.32003481981370063,
+        },
+      });
+
+      let snowGravityVector = new Cesium.Cartesian3();
+      let snowUpdate = function (particle, dt) {
+        dt;
+        Cesium.Cartesian3.normalize(particle.position, snowGravityVector);
+        Cesium.Cartesian3.multiplyByScalar(
+          snowGravityVector,
+          Cesium.Math.randomBetween(-30.0, -300.0),
+          snowGravityVector
+        );
+        particle.velocity = Cesium.Cartesian3.add(
+          particle.velocity,
+          snowGravityVector,
+          particle.velocity
+        );
+
+        let distance = Cesium.Cartesian3.distance(
+          vm.$viewer.scene.camera.position,
+          particle.position
+        );
+        if (distance > snowRadius) {
+          particle.endColor.alpha = 0.0;
+        } else {
+          particle.endColor.alpha =
+            snowSystem.endColor.alpha / (distance / snowRadius + 0.1);
         }
       };
 
-      let fighter = this.createEntity(fighterOptions);
+      // 雾与大气效果
+      this.$viewer.scene.skyAtmosphere.hueShift = -0.8;
+      this.$viewer.scene.skyAtmosphere.saturationShift = -0.7;
+      this.$viewer.scene.skyAtmosphere.brightnessShift = -0.33;
 
-      vm.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 150));
+      this.$viewer.scene.fog.density = 0.001;
+      this.$viewer.scene.fog.minimumBrightness = 0.8;
 
-      let start = {
-        longitude: -75.59777,
-        latitude: 40.03883,
-        height: 8000
-      };
-      let stop = {
-        longitude: -75.59777,
-        latitude: 40.04,
-        height: 8000
-      };
-      let duration = 3;
+      let snowParticleSize = this.$viewer.scene.drawingBufferWidth / 100.0;
+      let snowRadius = 100000.0;
 
-      this.controlModel(start, stop, duration);
+      let snowSystem = new Cesium.ParticleSystem({
+        modelMatrix: new Cesium.Matrix4.fromTranslation(
+          this.$viewer.scene.camera.position
+        ),
+        minimumSpeed: -1.0,
+        maximumSpeed: 0.0,
+        lifetime: 15.0,
+        emitter: new Cesium.SphereEmitter(snowRadius),
+        startScale: 0.5,
+        endScale: 1.0,
+        // image: "images/snowflake-particle.png",
+        // image: "images/snowflake.png",
+        image: "images/snow.png",
+        emissionRate: 7000.0,
+        startColor: Cesium.Color.WHITE.withAlpha(0.0),
+        endColor: Cesium.Color.WHITE.withAlpha(1.0),
+        minimumImageSize: new Cesium.Cartesian2(
+          snowParticleSize,
+          snowParticleSize
+        ),
+        maximumImageSize: new Cesium.Cartesian2(
+          snowParticleSize,
+          snowParticleSize
+        ),
+        updateCallback: snowUpdate,
+      });
+      this.$viewer.scene.primitives.add(snowSystem);
+    },
+    // 雨景
+    rain() {
+      // let vm = this;
+      this.$viewer.terrainProvider = Cesium.createWorldTerrain();
+      this.$viewer.scene.globe.depthTestAgainstTerrain = true;
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3(
+          277096.634865404,
+          5647834.481964232,
+          2985563.7039122293
+        ),
+        orientation: {
+          heading: 4.731089976107251,
+          pitch: -0.32003481981370063,
+        },
+      });
 
-      setTimeout(() => {
-        let new_start = {
-          longitude: -75.59777,
-          latitude: 40.04,
-          height: 8000
-        };
-        let new_stop = {
-          longitude: -75.59777,
-          latitude: 40.0403,
-          height: 8000
-        };
-        this.controlModel(new_start, new_stop, 4);
-      }, 9000);
+      // rain
+      this.$viewer.scene.skyAtmosphere.hueShift = -0.97;
+      this.$viewer.scene.skyAtmosphere.saturationShift = 0.25;
+      this.$viewer.scene.skyAtmosphere.brightnessShift = -0.4;
 
-    }
+      this.$viewer.scene.fog.density = 0.00025;
+      this.$viewer.scene.fog.minimumBrightness = 0.01;
+
+      let rainParticleSize = this.$viewer.scene.drawingBufferWidth / 100.0;
+      let rainRadius = 100000.0;
+
+      let rainSystem = new Cesium.ParticleSystem({
+        modelMatrix: new Cesium.Matrix4.fromTranslation(this.$viewer.scene.camera.position),
+        speed: -1.0,
+        lifetime: 15.0,
+        emitter: new Cesium.SphereEmitter(rainRadius),
+        startScale: 1.0,
+        endScale: 0.0,
+        // image: "images/rain-particle.png",
+        // image: "images/rainflake.png",
+        image: "images/rain.png",
+        emissionRate: 9000.0,
+        startColor: new Cesium.Color(0.27, 0.5, 0.7, 0.0),
+        endColor: new Cesium.Color(0.27, 0.5, 0.7, 0.98),
+        imageSize: new Cesium.Cartesian2(
+          rainParticleSize,
+          rainParticleSize * 2
+        ),
+        // updateCallback: rainUpdate,
+      });
+      this.$viewer.scene.primitives.add(rainSystem);
+    },
   },
 };
 </script>
