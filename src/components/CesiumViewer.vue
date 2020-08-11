@@ -34,13 +34,13 @@ export default {
     // this.setScene();
 
     // 绘制实体
-    // this.useEntity();
+    this.useEntity();
 
     // 雪景
     // this.snow();
 
     // 雨景
-    this.rain();
+    // this.rain();
   },
   methods: {
     // 初始化
@@ -735,6 +735,286 @@ export default {
       dashedLine.show = false;
 
       // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // Polyline Volumes
+      function computeCircle(radius) {
+        var positions = [];
+        for (var i = 0; i < 360; i++) {
+          var radians = Cesium.Math.toRadians(i);
+          positions.push(
+            new Cesium.Cartesian2(
+              radius * Math.cos(radians),
+              radius * Math.sin(radians)
+            )
+          );
+        }
+        return positions;
+      }
+
+      function computeStar(arms, rOuter, rInner) {
+        var angle = Math.PI / arms;
+        var length = 2 * arms;
+        var positions = new Array(length);
+        for (var i = 0; i < length; i++) {
+          var r = i % 2 === 0 ? rOuter : rInner;
+          positions[i] = new Cesium.Cartesian2(
+            Math.cos(i * angle) * r,
+            Math.sin(i * angle) * r
+          );
+        }
+        return positions;
+      }
+
+      let redTube = this.$viewer.entities.add({
+        name: "Red tube with rounded corners",
+        polylineVolume: {
+          positions: Cesium.Cartesian3.fromDegreesArray([
+            -85.0,
+            32.0,
+            -85.0,
+            36.0,
+            -89.0,
+            36.0,
+          ]),
+          shape: computeCircle(60000.0),
+          material: Cesium.Color.RED,
+        },
+      });
+      redTube.show = false;
+
+      let greenBox = this.$viewer.entities.add({
+        name: "Green box with beveled corners and outline",
+        polylineVolume: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -90.0,
+            32.0,
+            0.0,
+            -90.0,
+            36.0,
+            100000.0,
+            -94.0,
+            36.0,
+            0.0,
+          ]),
+          shape: [
+            new Cesium.Cartesian2(-50000, -50000),
+            new Cesium.Cartesian2(50000, -50000),
+            new Cesium.Cartesian2(50000, 50000),
+            new Cesium.Cartesian2(-50000, 50000),
+          ],
+          cornerType: Cesium.CornerType.BEVELED,
+          material: Cesium.Color.GREEN,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      greenBox.show = false;
+
+      let blueStar = this.$viewer.entities.add({
+        name: "Blue star with mitered corners and outline",
+        polylineVolume: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -95.0,
+            32.0,
+            0.0,
+            -95.0,
+            36.0,
+            100000.0,
+            -99.0,
+            36.0,
+            200000.0,
+          ]),
+          shape: computeStar(7, 70000, 50000),
+          cornerType: Cesium.CornerType.MITERED,
+          material: Cesium.Color.BLUE,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      blueStar.show = false;
+
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // rectangle
+      //红色矩形
+      let redRectangle = this.$viewer.entities.add({
+        name: "Red translucent rectangle with outline",
+        rectangle: {
+          coordinates: Cesium.Rectangle.fromDegrees(-110.0, 20.0, -80.0, 25.0),
+          material: Cesium.Color.RED.withAlpha(0.5),
+          outline: true,
+          outlineColor: Cesium.Color.RED,
+        },
+      });
+      redRectangle.show = false;
+
+      //绿色旋转、拉伸的矩形
+      let greenRectangle = this.$viewer.entities.add({
+        name: "Green translucent, rotated, and extruded rectangle",
+        rectangle: {
+          coordinates: Cesium.Rectangle.fromDegrees(-100.0, 30.0, -90.0, 40.0),
+          material: Cesium.Color.GREEN.withAlpha(0.5),
+          rotation: Cesium.Math.toRadians(45),
+          extrudedHeight: 300000.0,
+          height: 100000.0,
+          outline: true,
+          outlineColor: Cesium.Color.GREEN,
+        },
+      });
+      greenRectangle.show = false;
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // Sphere Ellipsoid
+      let blueEllipsoid = this.$viewer.entities.add({
+        name: "Blue ellipsoid",
+        position: Cesium.Cartesian3.fromDegrees(-114.0, 40.0, 300000.0),
+        ellipsoid: {
+          //可以指定三个轴的半径
+          radii: new Cesium.Cartesian3(200000.0, 200000.0, 300000.0),
+          material: Cesium.Color.BLUE,
+        },
+      });
+      blueEllipsoid.show = false;
+
+      let redSphere = this.$viewer.entities.add({
+        name: "Red sphere with black outline",
+        position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 300000.0),
+        ellipsoid: {
+          //正球体
+          radii: new Cesium.Cartesian3(300000.0, 300000.0, 300000.0),
+          material: Cesium.Color.RED,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      redSphere.show = false;
+
+      let ellipsoidOutlineOnly = this.$viewer.entities.add({
+        name: "Yellow ellipsoid outline",
+        position: Cesium.Cartesian3.fromDegrees(-100.0, 40.0, 300000.0),
+        ellipsoid: {
+          radii: new Cesium.Cartesian3(200000.0, 200000.0, 300000.0),
+          fill: false,
+          outline: true,
+          outlineColor: Cesium.Color.YELLOW,
+          slicePartitions: 24, //横向切割线
+          stackPartitions: 36, //纵向切割线
+        },
+      });
+      ellipsoidOutlineOnly.show = false;
+      // this.$viewer.zoomTo(this.$viewer.entities);
+
+      // wall
+      //东西方向的横墙
+      let redWall = this.$viewer.entities.add({
+        name: "Red wall at height",
+        wall: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -115.0,
+            44.0,
+            200000.0, //坐标点
+            -90.0,
+            44.0,
+            200000.0,
+          ]),
+          minimumHeights: [100000.0, 100000.0], //按坐标点的最小高度数组
+          material: Cesium.Color.RED,
+        },
+      });
+      redWall;
+
+      //四边围墙
+      let greenWall = this.$viewer.entities.add({
+        name: "Green wall from surface with outline",
+        wall: {
+          positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+            -107.0,
+            43.0,
+            100000.0,
+            -97.0,
+            43.0,
+            100000.0,
+            -97.0,
+            40.0,
+            100000.0,
+            -107.0,
+            40.0,
+            100000.0,
+            -107.0,
+            43.0,
+            100000.0,
+          ]),
+          material: Cesium.Color.GREEN,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      greenWall;
+
+      //曲折的墙
+      let blueWall = this.$viewer.entities.add({
+        name: "Blue wall with sawtooth heights and outline",
+        wall: {
+          //坐标点，不指定高度
+          positions: Cesium.Cartesian3.fromDegreesArray([
+            -115.0,
+            50.0,
+            -112.5,
+            50.0,
+            -110.0,
+            50.0,
+            -107.5,
+            50.0,
+            -105.0,
+            50.0,
+            -102.5,
+            50.0,
+            -100.0,
+            50.0,
+            -97.5,
+            50.0,
+            -95.0,
+            50.0,
+            -92.5,
+            50.0,
+            -90.0,
+            50.0,
+          ]),
+          maximumHeights: [
+            //上高
+            100000,
+            200000,
+            100000,
+            200000,
+            100000,
+            200000,
+            100000,
+            200000,
+            100000,
+            200000,
+            100000,
+          ],
+          minimumHeights: [
+            //下高
+            0,
+            100000,
+            0,
+            100000,
+            0,
+            100000,
+            0,
+            100000,
+            0,
+            100000,
+            0,
+          ],
+          material: Cesium.Color.BLUE,
+          outline: true,
+          outlineColor: Cesium.Color.BLACK,
+        },
+      });
+      blueWall;
+      this.$viewer.zoomTo(this.$viewer.entities);
     },
     // 添加模型
     addEntities() {
@@ -1188,7 +1468,9 @@ export default {
       let rainRadius = 100000.0;
 
       let rainSystem = new Cesium.ParticleSystem({
-        modelMatrix: new Cesium.Matrix4.fromTranslation(this.$viewer.scene.camera.position),
+        modelMatrix: new Cesium.Matrix4.fromTranslation(
+          this.$viewer.scene.camera.position
+        ),
         speed: -1.0,
         lifetime: 15.0,
         emitter: new Cesium.SphereEmitter(rainRadius),
