@@ -1,0 +1,24 @@
+{
+  "id": "Tank",
+  "name": "坦克2",
+  "namespace": "Equipment",
+  "type": "Object",
+  "description": "This is a description",
+  "fields": [
+    {
+      "id": "Bool",
+      "name": "布尔",
+      "type": "Bool",
+      "unit": "m",
+      "description": "desc-bool"
+    },
+    {
+      "id": "Map",
+      "name": "字典",
+      "type": "Map",
+      "description": "desc-map-int",
+      "valueType": "Int"
+    },
+    { "id": "Enum", "name": "枚举", "type": "Enum", "description": "desc-enum" }
+  ]
+}
