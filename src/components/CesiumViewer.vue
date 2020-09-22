@@ -22,7 +22,7 @@ export default {
     // this.configScene();
 
     // 加载实体
-    // this.loadEntities();
+    this.loadEntities();
 
     // 添加模型
     // this.addEntities();
@@ -34,7 +34,7 @@ export default {
     // this.setScene();
 
     // 绘制实体
-    this.useEntity();
+    // this.useEntity();
 
     // 雪景
     // this.snow();
@@ -296,6 +296,59 @@ export default {
       });
 
       nogizaka.show = false;
+
+      let point = this.$viewer.entities.add({
+        name: "point",
+        position: Cesium.Cartesian3.fromDegrees(121.506377, 31.245105),
+        point: {
+          pixelSize: 5,
+          color: Cesium.Color.RED,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2,
+        },
+        label: {
+          text: "Shanghai",
+          font: "14pt monospace",
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineWidth: 2,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -9),
+        },
+      });
+
+      // this.$viewer.zoomTo(point);
+      // this.$viewer.trackedEntity = point;
+      // point.show = false;
+      point;
+      // let camera = new Cesium.Camera(this.$viewer.scene);
+      // camera.flyTo({
+      //   destination: Cesium.Cartesian3.fromDegrees(
+      //     121.506377,
+      //     31.245105,
+      //     1000000.0
+      //   ),
+      // });
+
+      let logo = this.$viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(139.46, 35.42),
+        billboard: {
+          image: "images/Nogizaka46_Logo.png",
+          width: 128,
+          height: 128,
+        },
+      });
+      this.$viewer.trackedEntity = logo;
+      // logo.show = false;
+      let camera = new Cesium.Camera(this.$viewer.scene);
+      camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(136, 36, 1000000),
+      });
+
+      let handler = new Cesium.ScreenSpaceEventHandler(this.$viewer.scene.canvas);
+      handler.setInputAction((movement) => {
+        let position = this.$viewer.scene.pickPosition(movement.position);
+        console.log(position);
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
       // 椭圆
       let ellipse = this.$viewer.entities.add({
