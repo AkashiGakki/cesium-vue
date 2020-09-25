@@ -43,7 +43,11 @@ export default {
     // 雨景
     // this.rain();
 
-    // this.use3DTileset();
+    // this.sonwRef();
+    // this.rainRef();
+    // this.thunderRef();
+
+    this.addModel();
   },
   methods: {
     // 初始化
@@ -1158,7 +1162,7 @@ export default {
           appearance: new Cesium.PerInstanceColorAppearance(),
         })
       );
-      
+
       // 走廊 corridor
       this.$viewer.scene.primitives.add(
         new Cesium.Primitive({
@@ -1183,7 +1187,7 @@ export default {
           appearance: new Cesium.PerInstanceColorAppearance(),
         })
       );
-      
+
       // 共面多边几何 Coplanar
       this.$viewer.scene.primitives.add(
         new Cesium.Primitive({
@@ -1228,7 +1232,7 @@ export default {
           appearance: new Cesium.PerInstanceColorAppearance(),
         })
       );
-      
+
       // 圆柱 Cylinder
       this.$viewer.scene.primitives.add(
         new Cesium.Primitive({
@@ -1254,8 +1258,8 @@ export default {
           appearance: new Cesium.PerInstanceColorAppearance(),
         })
       );
-     
-     // 椭圆 ellipse
+
+      // 椭圆 ellipse
       this.$viewer.scene.primitives.add(
         new Cesium.Primitive({
           geometryInstances: new Cesium.GeometryInstance({
@@ -1280,7 +1284,7 @@ export default {
           }),
         })
       );
-      
+
       // 椭球 ellipsoid
       this.$viewer.scene.primitives.add(
         new Cesium.Primitive({
@@ -1334,7 +1338,6 @@ export default {
           appearance: new Cesium.PerInstanceColorAppearance(),
         })
       );
-
 
       // 矩形 rectangle
       this.$viewer.scene.primitives.add(
@@ -1574,7 +1577,7 @@ export default {
 
       return particleSystem;
     },
-    // 更新实体控制
+    // 更新实体控制(v0.1)
     controlEntity(start, stop, speed = 1) {
       // let vm = this;
       let longitude = start.longitude;
@@ -1615,8 +1618,6 @@ export default {
         }
       }, 1000 / 60);
     },
-    // 更新粒子控制
-    controlParticle() {},
     // 设置场景
     setScene() {
       let _this = this;
@@ -1870,7 +1871,7 @@ export default {
         // image: "images/snowflake-particle.png",
         // image: "images/snowflake.png",
         image: "images/snow.png",
-        emissionRate: 7000.0,
+        emissionRate: 700.0,
         startColor: Cesium.Color.WHITE.withAlpha(0.0),
         endColor: Cesium.Color.WHITE.withAlpha(1.0),
         minimumImageSize: new Cesium.Cartesian2(
@@ -1887,7 +1888,7 @@ export default {
     },
     // 雨景
     rain() {
-      // let vm = this;
+      let vm = this;
       this.$viewer.terrainProvider = Cesium.createWorldTerrain();
       this.$viewer.scene.globe.depthTestAgainstTerrain = true;
       this.$viewer.scene.camera.setView({
@@ -1913,6 +1914,37 @@ export default {
       let rainParticleSize = this.$viewer.scene.drawingBufferWidth / 100.0;
       let rainRadius = 100000.0;
 
+      let rainGravityScratch = new Cesium.Cartesian3();
+      let rainUpdate = function (particle, dt) {
+        dt;
+        rainGravityScratch = Cesium.Cartesian3.normalize(
+          particle.position,
+          rainGravityScratch
+        );
+        rainGravityScratch = Cesium.Cartesian3.multiplyByScalar(
+          rainGravityScratch,
+          -1050.0,
+          rainGravityScratch
+        );
+
+        particle.position = Cesium.Cartesian3.add(
+          particle.position,
+          rainGravityScratch,
+          particle.position
+        );
+
+        let distance = Cesium.Cartesian3.distance(
+          vm.$viewer.scene.camera.position,
+          particle.position
+        );
+        if (distance > rainRadius) {
+          particle.endColor.alpha = 0.0;
+        } else {
+          particle.endColor.alpha =
+            rainSystem.endColor.alpha / (distance / rainRadius + 0.1);
+        }
+      };
+
       let rainSystem = new Cesium.ParticleSystem({
         modelMatrix: new Cesium.Matrix4.fromTranslation(
           this.$viewer.scene.camera.position
@@ -1922,28 +1954,283 @@ export default {
         emitter: new Cesium.SphereEmitter(rainRadius),
         startScale: 1.0,
         endScale: 0.0,
-        // image: "images/rain-particle.png",
-        // image: "images/rainflake.png",
         image: "images/rain.png",
-        emissionRate: 9000.0,
+        emissionRate: 900.0,
         startColor: new Cesium.Color(0.27, 0.5, 0.7, 0.0),
         endColor: new Cesium.Color(0.27, 0.5, 0.7, 0.98),
         imageSize: new Cesium.Cartesian2(
           rainParticleSize,
           rainParticleSize * 2
         ),
-        // updateCallback: rainUpdate,
+        updateCallback: rainUpdate,
       });
       this.$viewer.scene.primitives.add(rainSystem);
     },
-    use3DTileset() {
-      let city = this.$viewer.scene.primitives.add(
-        new Cesium.Cesium3DTileset({
-          url: Cesium.IonResource.fromAssetId(3839),
-        })
+
+    sonwRef() {
+      console.log(this.$viewer);
+      let vm = this;
+      this.$viewer.terrainProvider = Cesium.createWorldTerrain();
+      this.$viewer.scene.globe.depthTestAgainstTerrain = true;
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3(
+          277096.634865404,
+          5647834.481964232,
+          2985563.7039122293
+        ),
+        orientation: {
+          heading: 4.731089976107251,
+          pitch: -0.32003481981370063,
+        },
+      });
+
+      var snowParticleSize = 12.0;
+      var snowRadius = 100000.0;
+      var minimumSnowImageSize = new Cesium.Cartesian2(
+        snowParticleSize,
+        snowParticleSize
+      );
+      var maximumSnowImageSize = new Cesium.Cartesian2(
+        snowParticleSize * 2.0,
+        snowParticleSize * 2.0
+      );
+      var snowSystem;
+
+      var snowGravityScratch = new Cesium.Cartesian3();
+      var snowUpdate = function (particle, dt) {
+        dt;
+        snowGravityScratch = Cesium.Cartesian3.normalize(
+          particle.position,
+          snowGravityScratch
+        );
+        Cesium.Cartesian3.multiplyByScalar(
+          snowGravityScratch,
+          Cesium.Math.randomBetween(-30.0, -300.0),
+          snowGravityScratch
+        );
+        particle.velocity = Cesium.Cartesian3.add(
+          particle.velocity,
+          snowGravityScratch,
+          particle.velocity
+        );
+
+        var distance = Cesium.Cartesian3.distance(
+          vm.$viewer.scene.camera.position,
+          particle.position
+        );
+        if (distance > snowRadius) {
+          particle.endColor.alpha = 0.0;
+        } else {
+          particle.endColor.alpha =
+            snowSystem.endColor.alpha / (distance / snowRadius + 0.1);
+        }
+      };
+
+      snowSystem = new Cesium.ParticleSystem({
+        modelMatrix: new Cesium.Matrix4.fromTranslation(
+          vm.$viewer.scene.camera.position
+        ),
+        minimumSpeed: -1.0,
+        maximumSpeed: 0.0,
+        lifetime: 15.0,
+        emitter: new Cesium.SphereEmitter(snowRadius),
+        startScale: 0.5,
+        endScale: 1.0,
+        image: "images/snowflake-particle.png",
+        emissionRate: 700.0,
+        startColor: Cesium.Color.WHITE.withAlpha(0.0),
+        endColor: Cesium.Color.WHITE.withAlpha(1.0),
+        minimumImageSize: minimumSnowImageSize,
+        maximumImageSize: maximumSnowImageSize,
+        updateCallback: snowUpdate,
+      });
+      this.$viewer.scene.primitives.add(snowSystem);
+    },
+    rainRef() {
+      let vm = this;
+      this.$viewer.terrainProvider = Cesium.createWorldTerrain();
+      this.$viewer.scene.globe.depthTestAgainstTerrain = true;
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3(
+          277096.634865404,
+          5647834.481964232,
+          2985563.7039122293
+        ),
+        orientation: {
+          heading: 4.731089976107251,
+          pitch: -0.32003481981370063,
+        },
+      });
+
+      var rainParticleSize = 15.0;
+      var rainRadius = 100000.0;
+      var rainImageSize = new Cesium.Cartesian2(
+        rainParticleSize,
+        rainParticleSize * 2.0
       );
 
-      city;
+      var rainSystem;
+
+      var rainGravityScratch = new Cesium.Cartesian3();
+      var rainUpdate = function (particle, dt) {
+        dt;
+        rainGravityScratch = Cesium.Cartesian3.normalize(
+          particle.position,
+          rainGravityScratch
+        );
+        rainGravityScratch = Cesium.Cartesian3.multiplyByScalar(
+          rainGravityScratch,
+          -1050.0,
+          rainGravityScratch
+        );
+
+        particle.position = Cesium.Cartesian3.add(
+          particle.position,
+          rainGravityScratch,
+          particle.position
+        );
+
+        var distance = Cesium.Cartesian3.distance(
+          vm.$viewer.scene.camera.position,
+          particle.position
+        );
+        if (distance > rainRadius) {
+          particle.endColor.alpha = 0.0;
+        } else {
+          particle.endColor.alpha =
+            rainSystem.endColor.alpha / (distance / rainRadius + 0.1);
+        }
+      };
+
+      rainSystem = new Cesium.ParticleSystem({
+        modelMatrix: new Cesium.Matrix4.fromTranslation(
+          vm.$viewer.scene.camera.position
+        ),
+        speed: -1.0,
+        lifetime: 15.0,
+        emitter: new Cesium.SphereEmitter(rainRadius),
+        startScale: 1.0,
+        endScale: 0.0,
+        image: "images/rainflake.png",
+        emissionRate: 900.0,
+        imageSize: rainImageSize,
+        updateCallback: rainUpdate,
+      });
+      this.$viewer.scene.primitives.add(rainSystem);
+    },
+
+    thunderRef() {
+      let vm = this;
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3.fromDegrees(121.5064, 31.247, 1000),
+        orientation: {
+          heading: 10,
+          pitch: 0,
+        },
+      });
+
+      let thunderSystem = new Cesium.ParticleSystem({
+        image: "images/thunder.png",
+        // image: "images/thunder_png.png",
+        imageSize: new Cesium.Cartesian2(64, 64),
+        startScale: 1.0,
+        endScale: 4.0,
+        particleLife: 1.0,
+        speed: 5.0,
+        emitter: new Cesium.SphereEmitter(1000.0),
+        emissionRate: 7.0,
+        modelMatrix: new Cesium.Matrix4.fromTranslation(
+          vm.$viewer.scene.camera.position
+        ),
+        lifetime: 16.0,
+      });
+
+      this.$viewer.scene.skyAtmosphere.hueShift = -0.8;
+      this.$viewer.scene.skyAtmosphere.saturationShift = -0.7;
+      this.$viewer.scene.skyAtmosphere.brightnessShift = -0.2;
+
+      // this.$viewer.scene.fog.density = 0.001;
+      // this.$viewer.scene.fog.minimumBrightness = 0.8;
+
+      this.$viewer.scene.primitives.add(thunderSystem);
+    },
+
+    addModel() {
+      // let coord = Cesium.Cartesian3.fromDegrees(
+      //   -75.62808254394531,
+      //   40.02824946899414,
+      //   0.0
+      // );
+
+      let position = Cesium.Cartesian3.fromDegrees(
+        -75.62808254394531,
+        40.02824946899414
+      );
+      // let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+
+      let heading = Cesium.Math.toRadians(10.0);
+      let pitch = Cesium.Math.toRadians(-10.0);
+      let roll = Cesium.Math.toRadians(0.0);
+
+      // let headingPitchRoll = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      // let orientation = new Cesium.Transforms.headingPitchRollQuaternion(
+      //   position,
+      //   headingPitchRoll
+      // );
+
+      // let carModel = this.$viewer.scene.primitives.add(
+      //   new Cesium.Model.fromGltf({
+      //     //异步的加载模型
+      //     url: "model3D/Truck.glb",
+      //     scale: 3.0, //缩放
+      //     position: position,
+      //     modelMatrix: modelMatrix, //模型矩阵
+      //   })
+      // );
+      // this.$viewer.trackedEntity = carModel;
+
+      let fighter = this.$viewer.entities.add({
+        name: "fighter",
+        id: "J15",
+        model: {
+          uri: "model3D/J15.glb",
+          minimumPixelSize: 100,
+          maximumScale: 1000,
+        },
+        position: position,
+      });
+
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3.fromDegrees(
+          -75.62808254394531,
+          40.02624946899414,
+          50.0
+        ),
+        orientation: {
+          heading,
+          pitch,
+          roll,
+        },
+      });
+
+      let particleSystem = this.$viewer.scene.primitives.add(
+        new Cesium.ParticleSystem({
+          image: "images/rain-particle.png",
+          imageSize: new Cesium.Cartesian2(20, 20),
+          startScale: 1.0,
+          endScale: 4.0,
+          particleLife: 1.0,
+          speed: 5.0,
+          emitter: new Cesium.CircleEmitter(0.5),
+          emissionRate: 5.0,
+          modelMatrix: fighter.computeModelMatrix(
+            Cesium.JulianDate.now(),
+            new Cesium.Matrix4()
+          ),
+          lifetime: 16.0,
+        })
+      );
+      particleSystem;
     },
   },
 };
