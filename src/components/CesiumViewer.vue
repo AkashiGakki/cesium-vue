@@ -6,8 +6,15 @@
 import Cesium from "cesium/Cesium";
 import "cesium/Widgets/widgets.css";
 
+import AddLayer from "./AddLayer";
+
 export default {
   name: "CesiumViewer",
+  data() {
+    return {
+      addLayer: AddLayer,
+    };
+  },
   mounted() {
     // 初始化
     this.init();
@@ -43,11 +50,14 @@ export default {
     // 雨景
     // this.rain();
 
+    // 天气效果
     // this.sonwRef();
     // this.rainRef();
     // this.thunderRef();
 
-    this.addModel();
+    // this.addModel();
+    this.use3DModel();
+    this.useParticle();
   },
   methods: {
     // 初始化
@@ -1710,21 +1720,6 @@ export default {
           }, 5000);
         }, 3000);
       });
-
-      // promise2.then(() => {
-      //   let start = {
-      //     longitude: -75.59777,
-      //     latitude: 40.03883,
-      //     height: 8000,
-      //   };
-      //   let stop = {
-      //     longitude: -75.59777,
-      //     latitude: 40.041,
-      //     height: 8000,
-      //   };
-
-      //   _this.controlEntity(start, stop, 2);
-      // });
     },
     // 控制模型飞行
     controlModel(id, start, stop, duration) {
@@ -1871,7 +1866,7 @@ export default {
         // image: "images/snowflake-particle.png",
         // image: "images/snowflake.png",
         image: "images/snow.png",
-        emissionRate: 700.0,
+        emissionRate: 1000.0,
         startColor: Cesium.Color.WHITE.withAlpha(0.0),
         endColor: Cesium.Color.WHITE.withAlpha(1.0),
         minimumImageSize: new Cesium.Cartesian2(
@@ -1956,8 +1951,8 @@ export default {
         endScale: 0.0,
         image: "images/rain.png",
         emissionRate: 900.0,
-        startColor: new Cesium.Color(0.27, 0.5, 0.7, 0.0),
-        endColor: new Cesium.Color(0.27, 0.5, 0.7, 0.98),
+        startColor: new Cesium.Color(0.27, 0.4, 0.6, 0.0),
+        endColor: new Cesium.Color(0.27, 0.4, 0.6, 0.98),
         imageSize: new Cesium.Cartesian2(
           rainParticleSize,
           rainParticleSize * 2
@@ -2166,39 +2161,40 @@ export default {
         -75.62808254394531,
         40.02824946899414
       );
-      // let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+      let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
 
       let heading = Cesium.Math.toRadians(10.0);
       let pitch = Cesium.Math.toRadians(-10.0);
       let roll = Cesium.Math.toRadians(0.0);
 
-      // let headingPitchRoll = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-      // let orientation = new Cesium.Transforms.headingPitchRollQuaternion(
-      //   position,
-      //   headingPitchRoll
-      // );
+      let headingPitchRoll = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      let orientation = new Cesium.Transforms.headingPitchRollQuaternion(
+        position,
+        headingPitchRoll
+      );
 
-      // let carModel = this.$viewer.scene.primitives.add(
-      //   new Cesium.Model.fromGltf({
-      //     //异步的加载模型
-      //     url: "model3D/Truck.glb",
-      //     scale: 3.0, //缩放
-      //     position: position,
-      //     modelMatrix: modelMatrix, //模型矩阵
-      //   })
-      // );
-      // this.$viewer.trackedEntity = carModel;
+      let carModel = this.$viewer.scene.primitives.add(
+        new Cesium.Model.fromGltf({
+          //异步的加载模型
+          url: "model3D/Truck.glb",
+          scale: 3.0, //缩放
+          position: position,
+          orientation: orientation,
+          modelMatrix: modelMatrix, //模型矩阵
+        })
+      );
+      this.$viewer.trackedEntity = carModel;
 
-      let fighter = this.$viewer.entities.add({
-        name: "fighter",
-        id: "J15",
-        model: {
-          uri: "model3D/J15.glb",
-          minimumPixelSize: 100,
-          maximumScale: 1000,
-        },
-        position: position,
-      });
+      // let fighter = this.$viewer.entities.add({
+      //   name: "fighter",
+      //   id: "J15",
+      //   model: {
+      //     uri: "model3D/J15.glb",
+      //     minimumPixelSize: 100,
+      //     maximumScale: 1000,
+      //   },
+      //   position: position,
+      // });
 
       this.$viewer.scene.camera.setView({
         destination: new Cesium.Cartesian3.fromDegrees(
@@ -2213,24 +2209,178 @@ export default {
         },
       });
 
+      // let particleSystem = this.$viewer.scene.primitives.add(
+      //   new Cesium.ParticleSystem({
+      //     image: "images/rain-particle.png",
+      //     imageSize: new Cesium.Cartesian2(20, 20),
+      //     startScale: 1.0,
+      //     endScale: 4.0,
+      //     particleLife: 1.0,
+      //     speed: 5.0,
+      //     emitter: new Cesium.CircleEmitter(0.5),
+      //     emissionRate: 5.0,
+      //     modelMatrix: fighter.computeModelMatrix(
+      //       Cesium.JulianDate.now(),
+      //       new Cesium.Matrix4()
+      //     ),
+      //     lifetime: 16.0,
+      //   })
+      // );
+      // particleSystem;
+    },
+
+    use3DModel() {
+      // let position = Cesium.Cartesian3.fromDegrees(
+      //   -75.62808254394531,
+      //   40.02824946899414
+      // );
+      // let modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+
+      // let heading = Cesium.Math.toRadians(-10.0);
+      // let pitch = Cesium.Math.toRadians(0.0);
+      // let roll = Cesium.Math.toRadians(0.0);
+
+      // let headingPitchRoll = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      // let orientation = new Cesium.Transforms.headingPitchRollQuaternion(
+      //   position,
+      //   headingPitchRoll
+      // );
+
+      var start = Cesium.JulianDate.fromDate(new Date(2020, 9, 27, 16));
+      var stop = Cesium.JulianDate.addSeconds(
+        start,
+        120,
+        new Cesium.JulianDate()
+      );
+
+      var pos1 = Cesium.Cartesian3.fromDegrees(
+        -75.15787310614596,
+        39.97862668312678
+      );
+      var pos2 = Cesium.Cartesian3.fromDegrees(
+        -75.1633691390455,
+        39.95355089912078
+      );
+      var position = new Cesium.SampledPositionProperty();
+
+      position.addSample(start, pos1);
+      position.addSample(stop, pos2);
+
+      let carModel = this.$viewer.entities.add({
+        name: "Truck",
+        id: "Truck",
+        model: {
+          uri: "model3D/Truck.glb",
+          minimumPixelSize: 100,
+          maximumScale: 1000,
+        },
+        position: position,
+        orientation: new Cesium.VelocityOrientationProperty(position),
+        // orientation: orientation,
+        // modelMatrix: modelMatrix,
+        availability: new Cesium.TimeIntervalCollection([
+          new Cesium.TimeInterval({
+            start: start,
+            stop: stop,
+          }),
+        ]),
+      });
+      this.$viewer.trackedEntity = carModel;
+
+      // this.$viewer.scene.camera.setView({
+      //   destination: new Cesium.Cartesian3.fromDegrees(
+      //     // -75.1633691390455,
+      //     // 39.97862668312678,
+          
+      //     -75.62808254394531,
+      //     40.02624946899414,
+      //     20.0
+      //   ),
+      //   // orientation: {
+      //   //   heading,
+      //   //   pitch,
+      //   //   roll,
+      //   // },
+      // });
+    },
+    useParticle() {
+      // let vm = this;
+      let model = this.$viewer.entities.getById("Truck");
       let particleSystem = this.$viewer.scene.primitives.add(
         new Cesium.ParticleSystem({
-          image: "images/rain-particle.png",
-          imageSize: new Cesium.Cartesian2(20, 20),
+          image: "images/smoke.png",
+
+          startColor: Cesium.Color.LIGHTSEAGREEN.withAlpha(0.7),
+          endColor: Cesium.Color.WHITE.withAlpha(0.0),
+
           startScale: 1.0,
           endScale: 4.0,
+
           particleLife: 1.0,
-          speed: 5.0,
-          emitter: new Cesium.CircleEmitter(0.5),
+
+          minimumSpeed: 1.0,
+          maximumSpeed: 4.0,
+
+          imageSize: new Cesium.Cartesian2(25, 25),
           emissionRate: 5.0,
-          modelMatrix: fighter.computeModelMatrix(
+          lifetime: 16.0,
+
+          emitter: new Cesium.CircleEmitter(0.5),
+
+          modelMatrix: model.computeModelMatrix(
             Cesium.JulianDate.now(),
             new Cesium.Matrix4()
           ),
-          lifetime: 16.0,
+          emitterModelMatrix: new Cesium.Matrix4.fromTranslationQuaternionRotationScale(
+            new Cesium.Cartesian3(-4.0, 0.0, 2.0),
+            new Cesium.Quaternion(0, 0, 0, 1),
+            new Cesium.Cartesian3(7.0, 6.0, 5.0),
+            new Cesium.Matrix4()
+          ),
+          // emitterModelMatrix: vm.computeEmitterModelMatrix,
+
+          bursts: [
+            // these burst will occasionally sync to create a multicolored effect
+            new Cesium.ParticleBurst({
+              time: 5.0,
+              minimum: 10,
+              maximum: 100,
+            }),
+            new Cesium.ParticleBurst({
+              time: 10.0,
+              minimum: 50,
+              maximum: 100,
+            }),
+            new Cesium.ParticleBurst({
+              time: 15.0,
+              minimum: 200,
+              maximum: 300,
+            }),
+          ],
         })
       );
+
       particleSystem;
+    },
+    computeEmitterModelMatrix() {
+      let emitterModelMatrix = new Cesium.Matrix4();
+      let translation = new Cesium.Cartesian3();
+      let rotation = new Cesium.Quaternion();
+      let hpr = new Cesium.HeadingPitchRoll();
+      let trs = new Cesium.TranslationRotationScale();
+      hpr = Cesium.HeadingPitchRoll.fromDegrees(0.0, 0.0, 0.0, hpr);
+      trs.translation = Cesium.Cartesian3.fromElements(
+        -4.0,
+        0.0,
+        1.4,
+        translation
+      );
+      trs.rotation = Cesium.Quaternion.fromHeadingPitchRoll(hpr, rotation);
+
+      return Cesium.Matrix4.fromTranslationRotationScale(
+        trs,
+        emitterModelMatrix
+      );
     },
   },
 };
