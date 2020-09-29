@@ -7,10 +7,10 @@ import Cesium from "cesium/Cesium";
 import "cesium/Widgets/widgets.css";
 
 export default {
-  name: "AddLayer",
+  name: "AddTerrain",
   mounted() {
     this.init();
-    this.addLayers();
+    this.addTerrain();
   },
   methods: {
     init() {
@@ -40,36 +40,34 @@ export default {
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
     },
-    // 添加图层
-    addLayers() {
-      // Remove default base layer
-      // this.$viewer.imageryLayers.remove(this.$viewer.imageryLayers.get(0));
+    // 添加地形
+    addTerrain() {
+      this.$viewer.terrainProvider = Cesium.createWorldTerrain({
+        requestWaterMask: true, // required for water effects
+        requestVertexNormals: true, // required for terrain lighting
+      });
 
-      // Add grid imagery
-      this.$viewer.imageryLayers.addImageryProvider(
-        new Cesium.GridImageryProvider()
-      );
+      // Enable depth testing so things behind the terrain disappear.
+      this.$viewer.scene.globe.depthTestAgainstTerrain = true;
 
-      // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.SingleTileImageryProvider({
-      //     url: "images/bang.png",
-      //     rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
-      //   })
-      // );
-
-      // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.ArcGisMapServerImageryProvider({
-      //     url:
-      //       "//services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-      //     baseLayerPicker: false
-      //   }),
-      // );
+      this.$viewer.scene.camera.flyTo({
+        destination: Cesium.Cartesian3.fromRadians(
+          -2.6399828792482234,
+          1.0993550795541742,
+          5795
+        ),
+        orientation: {
+          heading: 3.8455,
+          pitch: -0.4535,
+          roll: 0.0,
+        },
+      });
     },
   },
 };
 </script>
 
-<style scoped>
+<style scoped >
 .container {
   display: block;
   position: absolute;

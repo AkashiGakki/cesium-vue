@@ -7,10 +7,10 @@ import Cesium from "cesium/Cesium";
 import "cesium/Widgets/widgets.css";
 
 export default {
-  name: "AddLayer",
+  name: "ConfigScene",
   mounted() {
     this.init();
-    this.addLayers();
+    this.configScene();
   },
   methods: {
     init() {
@@ -40,36 +40,38 @@ export default {
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
     },
-    // 添加图层
-    addLayers() {
-      // Remove default base layer
-      // this.$viewer.imageryLayers.remove(this.$viewer.imageryLayers.get(0));
+    // 配置视窗
+    configScene() {
+      // Enable lighting based on sun/moon positions(激活基于太阳位置的光照)
+      this.$viewer.scene.globe.enableLighting = true;
 
-      // Add grid imagery
-      this.$viewer.imageryLayers.addImageryProvider(
-        new Cesium.GridImageryProvider()
+      // Create an initial camera view
+      let initialPosition = new Cesium.Cartesian3.fromDegrees(
+        -73.998114468289017509,
+        40.674512895646692812,
+        2631.082799425431
       );
-
-      // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.SingleTileImageryProvider({
-      //     url: "images/bang.png",
-      //     rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
-      //   })
-      // );
-
-      // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.ArcGisMapServerImageryProvider({
-      //     url:
-      //       "//services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-      //     baseLayerPicker: false
-      //   }),
-      // );
+      let initialOrientation = new Cesium.HeadingPitchRoll.fromDegrees(
+        7.1077496389876024807,
+        -31.987223091598949054,
+        0.025883251314954971306
+      );
+      let homeCameraView = {
+        destination: initialPosition,
+        orientation: {
+          heading: initialOrientation.heading,
+          pitch: initialOrientation.pitch,
+          roll: initialOrientation.roll,
+        },
+      };
+      // Set the initial view
+      this.$viewer.scene.camera.setView(homeCameraView);
     },
   },
 };
 </script>
 
-<style scoped>
+<style scoped >
 .container {
   display: block;
   position: absolute;

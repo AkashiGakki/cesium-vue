@@ -10,7 +10,8 @@ export default {
   name: "AddLayer",
   mounted() {
     this.init();
-    this.addLayers();
+    this.addEntities();
+    this.moveEneity();
   },
   methods: {
     init() {
@@ -40,30 +41,58 @@ export default {
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
     },
-    // 添加图层
-    addLayers() {
-      // Remove default base layer
-      // this.$viewer.imageryLayers.remove(this.$viewer.imageryLayers.get(0));
+    // 添加模型
+    addEntities() {
+      let fighter = this.$viewer.entities.add({
+        name: "fighter",
+        id: "J15",
+        model: {
+          uri: "model3D/J15.glb",
+          minimumPixelSize: 100,
+          maximumScale: 1000,
+        },
+        position: Cesium.Cartesian3.fromDegrees(-110.345, 30, 70000),
+      });
+      // this.$viewer.trackedEntity = fighter;
+      this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 35));
+    },
+    // 移动模型
+    moveEneity() {
+      let fighter = this.$viewer.entities.getById("J15");
 
-      // Add grid imagery
-      this.$viewer.imageryLayers.addImageryProvider(
-        new Cesium.GridImageryProvider()
-      );
+      let longitude = -110.345;
+      let latitude = 30.0;
+      let height = 70000;
 
-      // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.SingleTileImageryProvider({
-      //     url: "images/bang.png",
-      //     rectangle: Cesium.Rectangle.fromDegrees(-75.0, 28.0, -67.0, 29.75),
-      //   })
-      // );
+      this.$viewer.zoomTo(fighter, new Cesium.HeadingPitchRange(-1, -0.3, 350));
 
-      // this.$viewer.imageryLayers.addImageryProvider(
-      //   new Cesium.ArcGisMapServerImageryProvider({
-      //     url:
-      //       "//services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-      //     baseLayerPicker: false
-      //   }),
-      // );
+      let interval = setInterval(() => {
+        latitude += 0.000001;
+
+        fighter.position = new Cesium.Cartesian3.fromDegrees(
+          longitude,
+          latitude,
+          height
+        );
+        if (latitude >= 30.0003) {
+          clearInterval(interval);
+        }
+      }, 1000 / 60);
+
+      setTimeout(() => {
+        let interval2 = setInterval(() => {
+          latitude += 0.000004;
+
+          fighter.position = new Cesium.Cartesian3.fromDegrees(
+            longitude,
+            latitude,
+            height
+          );
+          if (latitude >= 30.0005) {
+            clearInterval(interval2);
+          }
+        });
+      }, 3000);
     },
   },
 };
