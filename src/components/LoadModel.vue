@@ -1,5 +1,5 @@
 <template>
-  <div class="container" ref="viewer"></div>
+  <div id="container" ref="viewer"></div>
 </template>
 
 <script>
@@ -116,16 +116,4 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: none;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="container" ref="viewer"></div>
+  <div id="container" ref="viewer"></div>
 </template>
 
 <script>
@@ -40,7 +40,7 @@ export default {
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
     },
-   // 雪景
+    // 雪景
     snow() {
       let vm = this;
       this.$viewer.terrainProvider = Cesium.createWorldTerrain();
@@ -391,22 +391,9 @@ export default {
 
       this.$viewer.scene.primitives.add(thunderSystem);
     },
-
   },
 };
 </script>
 
 <style scoped>
-.container {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: none;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
 </style>
