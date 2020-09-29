@@ -9,9 +9,10 @@ import "cesium/Widgets/widgets.css";
 import YsCesium from "../source/YsCesium";
 
 export default {
-  name: "Water",
+  name: "Thunder",
   mounted() {
     this.init();
+    this.thunder();
   },
   methods: {
     init() {
@@ -56,16 +57,41 @@ export default {
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       }, Cesium.ScreenSpaceEventType.MIDDLE_DOWN);
-
-      this.$viewer.terrainProvider = Cesium.createWorldTerrain({
-        requestWaterMask: true,
-        requestVertexNormals: true,
+    },
+    thunder() {
+      let vm = this;
+      this.$viewer.scene.camera.setView({
+        destination: new Cesium.Cartesian3.fromDegrees(121.5064, 31.247, 1000),
+        orientation: {
+          heading: 10,
+          pitch: 0,
+        },
       });
 
-      this.$viewer.scene.globe.depthTestAgainstTerrain = true;
-      this.$viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(136, 33, 10000),
+      let thunderSystem = new Cesium.ParticleSystem({
+        image: "images/thunder.png",
+        // image: "images/thunder_png.png",
+        imageSize: new Cesium.Cartesian2(64, 64),
+        startScale: 1.0,
+        endScale: 4.0,
+        particleLife: 1.0,
+        speed: 5.0,
+        emitter: new Cesium.SphereEmitter(2000.0),
+        emissionRate: 7.0,
+        modelMatrix: new Cesium.Matrix4.fromTranslation(
+          vm.$viewer.scene.camera.position
+        ),
+        lifetime: 16.0,
       });
+
+      this.$viewer.scene.skyAtmosphere.hueShift = -0.8;
+      this.$viewer.scene.skyAtmosphere.saturationShift = -0.7;
+      this.$viewer.scene.skyAtmosphere.brightnessShift = -0.2;
+
+      this.$viewer.scene.fog.density = 0.001;
+      this.$viewer.scene.fog.minimumBrightness = 0.8;
+
+      this.$viewer.scene.primitives.add(thunderSystem);
     },
   },
 };

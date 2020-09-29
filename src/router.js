@@ -14,6 +14,7 @@ import CalcDraw from './effect/CalcDraw'
 import Water from './effect/Water'
 import Rain from './effect/Rain'
 import Snow from './effect/Snow'
+import Thunder from './effect/Thunder'
 
 
 const push_ = VueRouter.prototype.push;
@@ -84,5 +85,9 @@ export default new VueRouter({
     path: "/snow",
     name: "snow",
     component: Snow,
+  }, {
+    path: "/thunder",
+    name: "thunder",
+    component: Thunder,
   }]
 })

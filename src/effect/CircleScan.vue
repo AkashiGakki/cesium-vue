@@ -35,6 +35,35 @@ export default {
 
       viewer.cesiumWidget.creditContainer.style.display = "none";
 
+      let scene = viewer.scene;
+      let canvas = viewer.canvas;
+      let camera = viewer.camera;
+      // scene.screenSpaceCameraController.minimumZoomDistance = 100;
+      // viewer.clock.onTick.addEventListener(function () {
+      //   setMinCamera();
+      // });
+      // let setMinCamera = function () {
+      //   if (camera.pitch > 0) {
+      //     scene.screenSpaceCameraController.enableTilt = false;
+      //   }
+      // };
+
+      let startMousePosition;
+      let mousePosition;
+      let handler = new Cesium.ScreenSpaceEventHandler(canvas);
+      handler.setInputAction(function (movement) {
+        mousePosition = startMousePosition = Cesium.Cartesian3.clone(
+          movement.position
+        );
+        handler.setInputAction(function (movement) {
+          mousePosition = movement.endPosition;
+          let y = mousePosition.y - startMousePosition.y;
+          if (y > 0) {
+            scene.screenSpaceCameraController.enableTilt = true;
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      }, Cesium.ScreenSpaceEventType.MIDDLE_DOWN);
+
       app.addCircleScan({
         lon: 117.217124, //经度
         lat: 31.809777, //纬度
@@ -62,5 +91,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

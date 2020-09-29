@@ -14,10 +14,10 @@ export default {
 
     // this.directionControl();
 
-    // setTimeout(() => {
-    //   this.snow();
-    //   this.thunder();
-    // }, 10000);
+    setTimeout(() => {
+      this.snow();
+      // this.thunder();
+    }, 10000);
   },
   methods: {
     init() {
@@ -46,6 +46,34 @@ export default {
 
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
+
+      // 禁止地形穿透
+
+      // this.$viewer.scene.screenSpaceCameraController.minimumZoomDistance = 100;
+      // this.$viewer.clock.onTick.addEventListener(() => {
+      //   setMinCamera();
+      // });
+      // let setMinCamera = function () {
+      //   if (vm.$viewer.camera.pitch > 0) {
+      //     vm.$viewer.scene.screenSpaceCameraController.enableTilt = false;
+      //   }
+      // };
+
+      let mousePosition, startMousePosition;
+      let handler = new Cesium.ScreenSpaceEventHandler(this.$viewer.canvas);
+
+      handler.setInputAction((movement) => {
+        mousePosition = startMousePosition = Cesium.Cartesian3.clone(
+          movement.position
+        );
+        handler.setInputAction(function (movement) {
+          mousePosition = movement.endPosition;
+          let y = mousePosition.y - startMousePosition.y;
+          if (y > 0) {
+            vm.$viewer.scene.screenSpaceCameraController.enableTilt = true;
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      }, Cesium.ScreenSpaceEventType.MIDDLE_DOWN);
 
       setTimeout(() => {
         this.$viewer.scene.camera.flyTo({
@@ -110,7 +138,9 @@ export default {
         new Cesium.ParticleSystem({
           show: options.hasOwnProperty(options.show) ? options.show : true,
           image: options.image,
-          imageSize: new Cesium.Cartesian2(30.0, 30.0),
+          imageSize: options.imageSize,
+          minimumImageSize: options.minimumImageSize,
+          maximumImageSize: options.maximumImageSize,
           color: options.color,
           emissionRate: options.emissionRate,
           emitter: options.emitter,
@@ -415,11 +445,13 @@ export default {
       let particleOptions_1 = {
         show: true,
         image: "images/bang.png",
-        imageSize: new Cesium.Cartesian2(3.0, 3.0),
+        // imageSize: new Cesium.Cartesian2(20.0, 20.0),
+        minimumImageSize: new Cesium.Cartesian2(10.0, 10.0),
+        maximumImageSize: new Cesium.Cartesian2(15.0, 15.0),
         color: Cesium.Color.YELLOW.withAlpha(0.3),
         emissionRate: 5.0,
-        emitter: new Cesium.ConeEmitter(Cesium.Math.toRadians(3.0)),
-        lifetime: 3.0,
+        emitter: new Cesium.ConeEmitter(Cesium.Math.toRadians(10.0)),
+        lifetime: 15.0,
         emitterModelMatrix: new Cesium.Matrix4.fromTranslationQuaternionRotationScale(
           new Cesium.Cartesian3(0.0, -11.0, 1.0),
           new Cesium.Quaternion(1, 0, 0, 1),

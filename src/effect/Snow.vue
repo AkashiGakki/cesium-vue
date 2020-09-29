@@ -16,6 +16,7 @@ export default {
   },
   methods: {
     init() {
+      let vm = this;
       let viewerOption = {
         geocoder: false,
         homeButton: false,
@@ -40,6 +41,22 @@ export default {
 
       // 隐藏Logo
       this.$viewer.cesiumWidget.creditContainer.style.display = "none";
+
+      let mousePosition, startMousePosition;
+      let handler = new Cesium.ScreenSpaceEventHandler(this.$viewer.canvas);
+
+      handler.setInputAction(function (movement) {
+        mousePosition = startMousePosition = Cesium.Cartesian3.clone(
+          movement.position
+        );
+        handler.setInputAction(function (movement) {
+          mousePosition = movement.endPosition;
+          let y = mousePosition.y - startMousePosition.y;
+          if (y > 0) {
+            vm.$viewer.scene.screenSpaceCameraController.enableTilt = true;
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      }, Cesium.ScreenSpaceEventType.MIDDLE_DOWN);
     },
     // 雪景
     snow() {

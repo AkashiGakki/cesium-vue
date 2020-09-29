@@ -35,8 +35,37 @@ export default {
 
       viewer.cesiumWidget.creditContainer.style.display = "none";
 
-      let color;
+      let scene = viewer.scene;
+      let canvas = viewer.canvas;
       let camera = viewer.camera;
+      // scene.screenSpaceCameraController.minimumZoomDistance = 100;
+      // viewer.clock.onTick.addEventListener(function () {
+      //   setMinCamera();
+      // });
+      // let setMinCamera = function () {
+      //   if (camera.pitch > 0) {
+      //     scene.screenSpaceCameraController.enableTilt = false;
+      //   }
+      // };
+
+      let startMousePosition;
+      let mousePosition;
+      let dropHandler = new Cesium.ScreenSpaceEventHandler(canvas);
+      dropHandler.setInputAction(function (movement) {
+        mousePosition = startMousePosition = Cesium.Cartesian3.clone(
+          movement.position
+        );
+        dropHandler.setInputAction(function (movement) {
+          mousePosition = movement.endPosition;
+          let y = mousePosition.y - startMousePosition.y;
+          if (y > 0) {
+            scene.screenSpaceCameraController.enableTilt = true;
+          }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      }, Cesium.ScreenSpaceEventType.MIDDLE_DOWN);
+
+      let color;
+      // let camera = viewer.camera;
       let polyline;
       let drawing = false;
       let positions = [];

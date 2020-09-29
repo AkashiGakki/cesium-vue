@@ -15,6 +15,7 @@
       <router-link to="/water" style="margin:5px">水流</router-link>
       <router-link to="/rain" style="margin:5px">雨景</router-link>
       <router-link to="/snow" style="margin:5px">雪景</router-link>
+      <router-link to="/thunder" style="margin:5px">雷电</router-link>
     </div>
 
     <router-view></router-view>
@@ -59,8 +60,6 @@
     <!-- <CameraTutorial /> -->
 
     <!-- <CesiumSail /> -->
-
-    <!-- <CircleScan /> -->
   </div>
 </template>
 
