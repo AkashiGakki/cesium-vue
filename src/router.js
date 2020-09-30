@@ -15,6 +15,9 @@ import Water from './effect/Water'
 import Rain from './effect/Rain'
 import Snow from './effect/Snow'
 import Thunder from './effect/Thunder'
+import DynamicWall from './effect/DynamicWall'
+
+import AddGeometry from './components/AddGeometry'
 
 
 const push_ = VueRouter.prototype.push;
@@ -89,5 +92,13 @@ export default new VueRouter({
     path: "/thunder",
     name: "thunder",
     component: Thunder,
+  }, {
+    path: "/dynamic-wall",
+    name: "dynamic-wall",
+    component: DynamicWall,
+  }, {
+    path: "/geometry",
+    name: "geometry",
+    component: AddGeometry,
   }]
 })

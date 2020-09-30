@@ -14,10 +14,10 @@ export default {
 
     // this.directionControl();
 
-    setTimeout(() => {
-      this.snow();
-      // this.thunder();
-    }, 10000);
+    // setTimeout(() => {
+    //   this.snow();
+    //   this.thunder();
+    // }, 10000);
   },
   methods: {
     init() {
